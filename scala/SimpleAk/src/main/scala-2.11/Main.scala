@@ -1,6 +1,6 @@
 import java.util.logging.Logger
 
-import actor.AkkaDb
+import actor.{PongActor, AkkaDb}
 import akka.actor.{Props, Actor, ActorRef, ActorSystem}
 import akka.event.{Logging, LoggingAdapter}
 import mol.SetRequest
@@ -13,9 +13,18 @@ import scala.collection.immutable.HashMap
 object Main {
 
   def main (args: Array[String]){
-    val actor = ActorSystem.create();
-    val ref: ActorRef = actor.actorOf(Props[AkkaDb])
-    ref ! SetRequest(Some("hello"),Some("world"))
+    import PongActor._
+    implicit val args: String = "Default"
+    val actor = ActorSystem.create("akkademy");
+//    val ref: ActorRef = actor.actorOf(Props[AkkaDb])
+//    val ref: ActorRef = actor.actorOf(props)
+//
+////    ref ! SetRequest(Some("hello"),Some("world"))
+//    ref ! "Pong"
+//    ref ! "Pong"
+//    actor.shutdown()
 
+    val ref = actor.actorOf(Props[AkkaDb], name = "akkadb")
+    println(ref.path)
   }
 }

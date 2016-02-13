@@ -2,9 +2,9 @@ package actor
 
 import java.util
 
-import akka.actor.Actor
+import akka.actor.{Status, Actor}
 import akka.event.{Logging, LoggingAdapter}
-import mol.SetRequest
+import mol.{KeyNotFoundException, GetRequest, SetRequest}
 
 
 /**
@@ -19,6 +19,13 @@ class AkkaDb extends Actor{
       log.info("Received set request – key: {}\n value: {}\n", key, value)
       map.put(key,value)
     }
-    case obj => log.info("Receive Unknown obj {}",obj)
+    case GetRequest(key) => {
+      log.info("Received set request – key: {}\n", key)
+      map.get(key) match {
+        case Some(x) => sender ! x
+        case None => sender ! Status.Failure(KeyNotFoundException(key))
+      }
+    }
+    case obj => sender ! Status.Failure(new ClassNotFoundException("not found"))
   }
 }
